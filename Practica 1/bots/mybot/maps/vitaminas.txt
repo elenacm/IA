@@ -1,0 +1,16 @@
+fresa:b c
+manzana:b c
+naranja:b c
+kiwi:c
+mandarina:a
+pinia:b c
+mango:a b c
+melocoton:a b
+higo:b c
+ciruela:a b c
+pera:b c
+platano:b c
+coco:b c
+aguacate:b c
+nuez:b
+cereza:a c

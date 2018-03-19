@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml version="2.0">
+
+<category>
+  <pattern> ^ Hola ^ </pattern>
+  <template> Hola, vamos a jugar a adivinar la fruta, ¿quien quieres que empiece pensando la fruta?
+  </template>
+</category>
+
+<!-- Empieza el juego -->
+<category>
+  <pattern> ^ tu ^ </pattern>
+  <template> Voy a pensar una fruta y tu tendrás que adivinarla. Sólo se pueden hacer preguntas de si o no.
+  <think>
+   <set name="fruta">fresa manzana naranja kiwi mandarina pinia mango melocoton higo ciruela pera platano coco aguacate nuez ciruela></set>
+   <!-- Elegimos una al azar -->
+   <set var="cantidad"><srai> COUNT <get name="fruta"/> </srai></set>
+   <set var="pos"><srai> RANDOM <get var="cantidad"/> </srai></set>
+   <set var="elegida"><srai> SELECTITEM <get var="pos"/> IN <get name="fruta"/></srai></set>  
+   <set name="fruta"><get var="elegida"/></set>
+  </think>
+  </template>
+</category>
+
+<!-- Preguntamos sobre el color de la fruta -->
+<category>
+  <pattern> ^ color * </pattern>
+  <template>
+    <think>
+      <set var="colorcillo"><star index="2"/></set>
+      <set var="color_fruta"><map name="color"><get name="fruta"/></map></set>
+      <set var="esta"><srai> FINDITEM <get var="colorcillo"/> IN <get var="color_fruta"/></srai></set>
+    </think>
+    <condition var="esta">
+      <li value="0"> La fruta no es de ese color :( </li>
+      <li> Sii, la fruta es de color <get var="colorcillo"/> </li>
+    </condition>
+  </template>
+</category>
+
+<category>
+  <pattern> ^ es <set>color</set> </pattern>
+  <template><srai>COLOR <star index="2"/></srai></template>
+</category>
+
+<category>
+  <pattern> ^ color es * </pattern>
+  <template><srai>COLOR <star index="2"/></srai></template>
+</category>
+
+<category>
+  <pattern> ^ fruta es <set>color</set> </pattern>
+  <template><srai>COLOR <star index="2"/></srai></template>
+</category>
+
+<category>
+  <pattern> [El La] * es <set>color</set> </pattern>
+  <template>
+    <think>
+      <set var="elegida"><star/></set>
+      <set var="colores"><map name="color"><get var="elegida"/></map></set>
+      <set var="col"><star index="2"/></set>
+      <set var="esta"><srai> FINDITEM <get var="col"/> IN <get var="colores"/></srai></set>
+    </think>
+    <condition var="esta">
+      <li value="0"> No :( </li>
+      <li> Sii :) </li>
+    </condition>
+  </template>
+</category>
+
+<!-- Preguntamos sobre el sabor de la fruta -->
+<category>
+  <pattern> ^ sabor * </pattern>
+  <template>
+    <think>
+      <set var="saborcillo"><star index="2"/></set>
+      <set var="sabor_fruta"><map name="sabor"><get name="fruta"/></map></set>
+      <set var="esta"><srai> FINDITEM <get var="saborcillo"/> IN <get var="sabor_fruta"/></srai></set>
+    </think>
+    <condition var="esta">
+      <li value="0"> La fruta no es de ese sabor :( </li>
+      <li> Sii, la fruta es de sabor <get var="saborcillo"/> </li>
+    </condition>
+  </template>
+</category>
+
+<category>
+  <pattern> ^ es <set>sabor</set> </pattern>
+  <template><srai>SABOR <star index="2"/></srai></template>
+</category>
+
+<category>
+  <pattern> ^ sabor es * </pattern>
+  <template><srai>SABOR <star index="2"/></srai></template>
+</category>
+
+<category>
+  <pattern> ^ fruta es <set>sabor</set> </pattern>
+  <template><srai>SABOR <star index="2"/></srai></template>
+</category>
+
+<category>
+  <pattern> [El La] * es <set>sabor</set> </pattern>
+  <template>
+    <think>
+      <set var="elegida"><star/></set>
+      <set var="sabores"><map name="sabor"><get var="elegida"/></map></set>
+      <set var="col"><star index="2"/></set>
+      <set var="esta"><srai> FINDITEM <get var="col"/> IN <get var="sabores"/></srai></set>
+    </think>
+    <condition var="esta">
+      <li value="0"> No :( </li>
+      <li> Sii :) </li>
+    </condition>
+  </template>
+</category>
+
+<!-- Preguntamos sobre el tamaño de la fruta -->
+<category>
+  <pattern> ^ tamanio * </pattern>
+  <template>
+    <think>
+      <set var="tam"><star index="2"/></set>
+      <set var="tam_fruta"><map name="tamaño"><get name="fruta"/></map></set>
+      <set var="esta"><srai> FINDITEM <get var="tam"/> IN <get var="tam_fruta"/></srai></set>
+    </think>
+    <condition var="esta">
+      <li value="0"> La fruta no es de ese tamaño :( </li>
+      <li> Sii, la fruta es de sabor <get var="tam"/> </li>
+    </condition>
+  </template>
+</category>
+
+<category>
+  <pattern> ^ es <set>tamaño</set> </pattern>
+  <template><srai>TAMANIO <star index="2"/></srai></template>
+</category>
+
+<category>
+  <pattern> ^ tamanio es * </pattern>
+  <template><srai>TAMANIO <star index="2"/></srai></template>
+</category>
+
+<category>
+  <pattern> ^ fruta es <set>tamaño</set> </pattern>
+  <template><srai>TAMANIO <star index="2"/></srai></template>
+</category>
+
+<category>
+  <pattern> [El La] * es <set>tamaño</set> </pattern>
+  <template>
+    <think>
+      <set var="elegida"><star/></set>
+      <set var="tam"><map name="tamaño"><get var="elegida"/></map></set>
+      <set var="col"><star index="2"/></set>
+      <set var="esta"><srai> FINDITEM <get var="col"/> IN <get var="tam"/></srai></set>
+    </think>
+    <condition var="esta">
+      <li value="0"> No :( </li>
+      <li> Sii :) </li>
+    </condition>
+  </template>
+</category>
+
+<!-- Preguntamos sobre las vitaminas -->
+
+<category>
+  <pattern> ^ vitamina * </pattern>
+  <template>
+    <think>
+      <set var="vitamina"><star index="2"/></set>
+      <set var="v_fruta"><map name="vitaminas"><get name="fruta"/></map></set>
+      <set var="esta"><srai> FINDITEM <get var="vitamina"/> IN <get var="v_fruta"/></srai></set>
+    </think>
+    <condition var="esta">
+      <li value="0"> La fruta no tiene esa vitamina :( </li>
+      <li>Sii, la fruta tiene vitamina <get var="vitamina"/> </li>
+    </condition>
+  </template>
+</category>
+
+<category>
+  <pattern> [El La] * tiene vitamina <set>vitaminas</set> </pattern>
+  <template>
+    <think>
+      <set var="elegida"><star/></set>
+      <set var="v"><map name="vitaminas"><get var="elegida"/></map></set>
+      <set var="col"><star index="2"/></set>
+      <set var="esta"><srai> FINDITEM <get var="col"/> IN <get var="v"/></srai></set>
+    </think>
+    <condition var="esta">
+      <li value="0"> No :( </li>
+      <li> Sii :) </li>
+    </condition>
+  </template>
+</category>
+
+<!-- Decidimos si se ha acertado la fruta o no -->
+<category>
+  <pattern> ^ es [el la] * </pattern>
+  <template>
+    <think>
+      <set var="elegida"><star index="2"/></set>
+    </think>
+    <condition var="elegida">
+      <li><value><get name="fruta"/></value> Has acertado la fruta :)</li>
+      <li> La fruta no es esa :( </li>
+    </condition>
+  </template>
+</category>
+
+</aiml>

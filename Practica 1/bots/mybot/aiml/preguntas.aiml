@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml version="2.0">
+
+<!-- Pregunta 1 -->
+<category>
+  <pattern> ^ [super+ aprob+] la parte practica</pattern>
+  <template> La nota final tiene que ser igual o superior a 3 sobre 10. Se tiene en cuenta la participación y asistencia a clase, lo cual constituye el 10% de la nota final. También se realizarán tres prácticas y un examen de problemas, cuya media constituye el 90% de la nota final.
+  </template>
+</category>
+
+<category>
+  <pattern> ^ [super+ aprob+] ^ practicas </pattern>
+  <template><srai>APROBAR LA PARTE PRACTICA</srai></template>
+</category>
+
+<!-- Pregunta 2 -->
+<category>
+  <pattern> ^ [eval+ corr+] * convocatoria ordinaria ^ </pattern>
+  <template> Para aprobar la asignatura es necesario tener una calificación media igual superior a 5 sobre 10. Además, tanto la calificación de la parte teórica como la de la prate práctica deben ser mayores oiguales a 3 sobre 10. En caso de no llegar a 3 sobre 10 en una de las partes, la nota no será la media, será el mínimo de las dos notas.
+  </template>
+</category>
+
+<category>
+  <pattern> ^ convocatoria ordinaria ^ [eval+ corr+] </pattern>
+  <template><srai>EVALUAR LA CONVOCATORIA ORDINARIA</srai></template>
+</category>
+
+<!-- Pregunta 3 -->
+<category>
+  <pattern>* convocatoria extraordinaria </pattern>
+  <template> En la convocatoria extraordinaria habrá un examen escrito único (evaluado de 0 a 10) que incluirá preguntas tanto de tipo teórico como práctico que garanticen que el alumno ha adquirido la totalidad de las competencias descritas en la guía docente.
+  </template>
+</category>
+
+<!-- Pregunta 4 -->
+<category>
+  <pattern> ^ no puedo [asistir ir] a ^ clase ^</pattern>
+  <template> Sólo pierdes el 10% de la nota final de prácticas.
+  </template>
+</category>
+
+<!-- Pregunta 5 -->
+<category>
+  <pattern> ^ (minima) nota (minima) para [aprob+ super+] ^ </pattern>
+  <template> Se necesita un 3 sobre diez como mínimo para hacer media y poder aprobar.
+  </template>
+</category>
+
+<!-- Pregunta 6 -->
+<category>
+  <pattern> ^ practicas ^ obligatorias ^</pattern>
+  <template> La realización de las distintas prácticas son obligatorias para poder aprobar, sin embargo, la asistencia a las mismas no lo es.
+  </template>
+</category>
+
+<category>
+  <pattern> ^ obligatorias ^ practicas ^</pattern>
+  <template><srai>LAS PRACTICAS SON OBLIGATORIAS</srai></template>
+</category>
+
+<!-- Pregunta 7 -->
+<category>
+  <pattern> ^ cada practica ^ </pattern>
+  <template>Cada práctica vale un 25% del 90% de la nota final de prácticas.</template>
+</category>
+
+<category>
+  <pattern> ^ las practicas de manera individual ^ </pattern>
+  <template><srai>CADA PRACTICA</srai></template>
+</category>
+
+<!-- Pregunta 8 -->
+<category>
+  <pattern> ^ participacion con respecto ^</pattern>
+  <template> La participación sólo supone un 10% de la nota final de prácticas.
+  </template>
+</category>
+
+<!-- Pregunta 9 -->
+<category>
+  <pattern> ^ puntos por [particip+] ^ </pattern>
+  <template>Saliendo a resolver los ejercicios de la relación de problemas. </template>
+</category>
+
+<!-- Pregunta 10 -->
+<category>
+  <pattern> ^ [practicas trabajos] ^ individuales ^ </pattern>
+  <template> Sí. </template>
+</category>
+
+<!-- Pregunta 11 -->
+<category>
+  <pattern>^ [practicas trabajos] ^ grupo ^</pattern>
+  <template> Obviamente no. </template>
+</category>
+
+<!-- Pregunta 12 -->
+<category>
+  <pattern> ^ (ejercicios) ^ relaciones de problemas ^ </pattern>
+  <template> No hace falta. </template>
+</category>
+
+<!-- Pregunta 13 -->
+<category>
+  <pattern> ^ [examen prueba] ^ [teori+]</pattern>
+  <template> La nota final es la media de los dos examenes de teoria que se realizan, por lo tanto cada examen es el 25% de la nota final. 
+  </template>
+</category>
+
+<!-- Pregunta 14 -->
+<category>
+  <pattern> ^ recuperar * </pattern>
+  <template> No se puede recuperar. </template>
+</category>
+
+<!-- Pregunta 15 -->
+<category>
+  <pattern> ^ copio ^ </pattern>
+  <template> Lo siento, irás a la convocatoria extraordinaria.</template>
+</category>
+
+<!-- Pregunta 16 -->
+<category>
+  <pattern> ^ copiar ^ </pattern>
+  <template> Los dos a la convocatoria extraordinaria.</template>
+</category>
+
+<!-- Pregunta 17 -->
+<category>
+  <pattern> * [suspendo suspender] ^ convocatoria ordinaria</pattern>
+  <template> No pasa nada, siempre nos quedará julio :). </template>
+</category>
+
+<!-- Pregunta 18 -->
+<category>
+  <pattern> ^ practica y la teoria ^ </pattern>
+  <template><srai>EVALUAR LA CONVOCATORIA ORDINARIA</srai></template>
+</category>
+
+<!-- Pregunta 19 -->
+<category>
+  <pattern> ^ tutorias ^ practicas ^ </pattern>
+  <template> Lunes de 10:00 a 13:30 en D23 (ETSIIT) y Martes de 10:00 a 12:30 en D23 (ETSIIT) </template>
+</category>
+
+<!-- Pregunta 20 -->
+<category>
+  <pattern> ^ [aprobar superar] ^ [practica practicas] ^ si no presento * practica ^  </pattern>
+  <template> Sí. </template>
+</category>
+
+<!-- Pregunta 21 -->
+<category>
+  <pattern> ^ nota minima ^ para hacer media ^ </pattern>
+  <template> Se necesita como mínimo un 3 sobre 10 en cada parte. </template>
+</category>
+
+<!-- Pregunta 22 -->
+<category>
+  <pattern> ^ practica 1 * defender el nivel 3 * </pattern>
+  <template> Obtendrás un 6 como calificación de la práctica 1 </template>
+</category>
+
+<!-- Pregunta 23 -->
+<category>
+  <pattern> ^ practica 1 ^ nivel 0 ^ </pattern>
+  <template> No. </template>
+</category>
+
+<!-- Pregunta 24 -->
+<category>
+  <pattern> * [asistir ir acudir] * practicas * defensa * </pattern>
+  <template> Si no se puede asistir a defender la práctica, se dará por no presentada. </template>
+</category>
+
+<!-- Pregunta 25 -->
+<category>
+  <pattern> * teoricas * curso ^ </pattern>
+  <template> Dos </template>
+</category>
+
+<!-- Pregunta 27 -->
+<category>
+  <pattern> ^ examen * ejercicios ^ </pattern>
+  <template> Suponemos que habrá que realizar una serie de ejercicios sobre prácticas. </template>
+</category>
+
+<!-- Pregunta 28 -->
+<category>
+  <pattern> * seguro * el nivel 3 * </pattern>
+  <template> Mejor asegurar el nivel 2. </template>
+</category>
+
+<!-- Pregunta 29 -->
+<category>
+  <pattern> * C++, podria hacer la practica 1 ^ </pattern>
+  <template> No conozco tanto ese lenguaje. </template>
+</category>
+
+<!-- Pregunta 30 -->
+<category>
+  <pattern> * agentes conversacionales * defensa ^ </pattern>
+  <template> Podría, pero suspendería. </template>
+  </category>
+
+</aiml>

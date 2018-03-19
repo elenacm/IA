@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml version="2.0">
+
+<category>
+  <pattern> ^ Hola ^ </pattern>
+  <template> Hola, vamos a jugar a adivinar la fruta, ¿quien quieres que empiece pensando la fruta?
+  </template>
+</category>
+
+<!-- Empieza el juego -->
+<category>
+  <pattern> yo </pattern>
+  <template>
+    Vale, ahora necesito que pienses una fruta y me respondas con sí o no dependiendo de las características de la fruta pensada, cuando la pienses, solo escribe "ya" y empezaremos.
+    <think>
+      <set name="frutas"><readset>frutas</readset></set>
+      <set name="colores"><readset>color1</readset></set>
+      <set name="sabores"><readset>sabor1</readset></set>
+      <set name="tamaños"><readset>tamaño1</readset></set>
+      <set name="vitaminas"><readset>vitaminas</readset></set>
+      <set name="color_elegido"></set>
+      <set name="sabor_elegido"></set>    
+      <set name="tamaño_elegido"></set>
+      <set name="vitamina_elegida"></set>
+      <set name="contador">0</set>
+    </think>
+  </template>
+</category>
+
+<category>
+  <pattern> ^ ya ^ </pattern>
+  <template>
+    <condition name="contador">
+      <li value="0">
+        <think>
+          <set var="cont_color"><srai>COUNT <get name="color_elegido"/></srai></set>
+        </think>
+        <condition var="cont_color">
+          <li value="1">
+            Ya tengo un color, voy a ver si sé la fruta, vale?
+            <think>
+              <set name="topic">fruta</set>
+            </think>
+          </li>
+          <li>
+            <think>
+              <set name="topic">color</set>
+            </think>
+            La fruta es de color <srai>TOP <get name="colores"/></srai>
+          </li>
+        </condition>
+      </li>
+      <li value="1">
+        <think>
+          <set var="cont_sabor"><srai>COUNT <get name="sabor_elegido"/></srai></set>
+        </think>
+        <condition var="cont_sabor">
+          <li value="1">
+            Ya tengo un sabor, voy a ver si sé la fruta, vale?
+            <think>
+              <set name="topic">fruta</set>
+            </think>
+ </li>
+          <li>
+            <think>
+              <set name="topic">sabor</set>
+            </think>
+            La fruta es de sabor <srai>TOP <get name="sabores"/></srai>
+          </li>
+        </condition>
+      </li>
+      <li value="2">
+        <think>
+          <set var="cont_tam"><srai>COUNT <get name="tamaño_elegido"/></srai></set>
+        </think>
+        <condition var="cont_tam">
+          <li value="1">
+            Ya tengo un tamaño, voy a ver si sé la fruta, vale?
+            <think>
+              <set name="topic">fruta</set>
+            </think>
+          </li>
+          <li>
+            <think>
+              <set name="topic">tamaño</set>
+            </think>
+            La fruta es de tamaño <srai>TOP <get name="tamaños"/></srai>
+          </li>
+        </condition>
+      </li>
+      <li value="3">
+        <think>
+          <set var="cont_v"><srai>COUNT <get name="vitamina_elegida"/> </srai></set>
+        </think>
+        <condition value="cont_v">
+          <li value="1">
+            Ya tengo todas la vitaminas necesarias, creo que ya puedo adivinar la fruta, espera un momento vale?
+            <think>
+              <set name="topic">fruta</set>
+            </think>
+          </li>
+          <li>
+            <think>
+              <set name="topic">vitaminas</set>
+            </think>
+            La fruta tiene vitamina <srai>TOP <get name="vitaminas"/></srai>
+          </li>
+        </condition>
+      </li>
+      <li>
+        Como ya tengo todas las propiedades necesarias, voy a intentar adivinar tu fruta, vale?
+        <think>
+          <set name="topic">fruta</set>
+        </think>
+      </li>
+    </condition>
+  </template>
+</category>
+
+<!-- Pregunta sobre el color -->
+<topic name="color">
+<category>
+  <pattern> * </pattern>
+  <template>
+    <think>
+      <set var="res"><star/></set>
+    </think>
+    <condition var="res">
+      <li value="si">
+        <think>
+          <set name="color_elegido"><srai>TOP <get name="colores"/></srai></set>
+          <set name="colores"><srai>REMAIN <get name="colores"/></srai></set>
+          <set name="contador">1</set>
+        </think>
+        <srai>YA</srai>
+      </li>
+      <li value="no">
+        <think>
+          <set name="colores"><srai>REMAIN <get name="colores"/></srai></set>
+        </think>
+        <srai>YA</srai>
+      </li>
+      <li> <srai>YA</srai> </li>
+    </condition>
+    </template>
+</category>
+</topic>
+
+<!-- Pregunta sobre el sabor -->
+<topic name="sabor">
+<category>
+  <pattern> * </pattern>
+  <template>
+    <think>
+      <set var="res"><star/></set>
+    </think>
+    <condition var="res">
+      <li value="si">
+        <think>
+          <set name="sabor_elegido"><srai>TOP <get name="sabores"/></srai></set>
+          <set name="sabores"><srai>REMAIN <get name="sabores"/></srai></set>
+          <set name="contador">2</set>
+        </think>
+        <srai>YA</srai>
+      </li>
+      <li value="no">
+        <think>
+          <set name="sabores"><srai>REMAIN <get name="sabores"/></srai></set>
+        </think>
+        <srai>YA</srai>
+      </li>
+      <li> <srai>YA</srai> </li>
+    </condition>
+    </template>
+</category>
+</topic>
+
+<!-- Pregunta sobre el tamaño -->
+<topic name="tamaño">
+<category>
+  <pattern> * </pattern>
+  <template>
+    <think>
+      <set var="res"><star/></set>
+    </think>
+    <condition var="res">
+      <li value="si">
+        <think>
+          <set name="tamaño_elegido"><srai>TOP <get name="tamaños"/></srai></set>
+          <set name="tamaños"><srai>REMAIN <get name="tamaños"/></srai></set>
+          <set name="contador">3</set>
+        </think>
+        <srai>YA</srai>
+      </li>
+      <li value="no">
+        <think>
+          <set name="tamaños"><srai>REMAIN <get name="tamaños"/></srai></set>
+        </think>
+        <srai>YA</srai>
+      </li>
+      <li> <srai>YA</srai> </li>
+    </condition>
+    </template>
+</category>
+</topic>
+
+<!-- Pregunta sobre las vitaminas -->
+<topic name="vitaminas">
+<category>
+  <pattern> * </pattern>
+  <template>
+    <think>
+      <set var="res"><star/></set>
+    </think>
+    <condition var="res">
+      <li value="si">
+        <think>
+          <set name="vitamina_elegida"><srai>TOP <get name="vitaminas"/></srai></set>
+          <set name="vitaminas"><srai>REMAIN <get name="vitaminas"/></srai></set>
+          <set name="contador">4</set>
+        </think>
+        <srai>YA</srai>
+      </li>
+      <li value="no">
+        <think>
+          <set name="vitaminas"><srai>REMAIN <get name="vitaminas"/></srai></set>
+        </think>
+        <srai>YA</srai>
+      </li>
+      <li> <srai>YA</srai> </li>
+    </condition>
+    </template>
+</category>
+</topic>
+
+<category>
+  <pattern> ELIMINA </pattern>
+  <template>
+    <think>
+      <set name="frutas"><srai>REMAIN <get name="frutas"/></srai></set>
+      <srai>OK</srai>
+    </think>
+  </template>
+</category>
+
+<!-- Adivina la fruta -->
+<topic name="fruta">
+  <category>
+    <pattern> * </pattern>
+    <template>
+      <think>
+        <set var="c_fruta"><srai>COUNT <get name="frutas"/></srai></set>
+        <set var="fruta_e"><srai>TOP <get name="frutas"/></srai></set>
+        <set var="prop"><map name="propiedades"><get var="fruta_e"/></map></set>
+        <set var="color"><srai>FINDITEM <get name="color_elegido"/> IN <get var="prop"/></srai></set>
+        <set var="sabor"><srai>FINDITEM <get name="sabor_elegido"/> IN <get var="prop"/></srai></set>
+        <set var="tamaño"><srai>FINDITEM <get name="tamaño_elegido"/> IN <get var="prop"/></srai></set>
+        <set var="vitamina"><srai>FINDITEM <get name="vitamina_elegida"/> IN <get var="prop"/></srai></set>
+      </think>
+
+     <condition var="color">
+       <li value="0">
+         <srai>ELIMINA</srai>                
+       </li>
+       <li>
+         <condition var="sabor">
+           <li value="0">
+             <srai>ELIMINA</srai>
+           </li>
+           <li>
+             <condition var="tamaño">
+               <li value="0">
+                 <srai>ELIMINA</srai>
+               </li>
+               <li>
+                 <condition var="vitamina">
+                   <li value="0">
+                     <srai>ELIMINA</srai>
+                   </li>
+                   <li>
+                     <think>
+                       Vitamina encontrada
+                     </think>
+                   </li>
+                 </condition>
+               </li>
+             </condition>
+           </li>
+         </condition>
+       </li>
+     </condition>
+     
+     <condition var="c_fruta">
+       <li value="1">
+         <think>
+           <set name="topic">adivina</set>
+         </think>
+         La fruta que has pensado es <srai>TOP <get name="frutas"/></srai> ?
+       </li>
+       <li>
+         <think>
+           <set name="topic">adivina</set>
+         </think>
+         La fruta que has pensado es <srai>TOP <get name="frutas"/></srai> ?
+       </li>
+     </condition>
+
+    </template>           
+  </category>
+</topic>
+
+<topic name="adivina">
+<category>
+  <pattern> * </pattern>
+  <template>
+    <think>
+      <set var="adivina"><star/></set>
+    </think>
+    <condition var="adivina">
+      <li value="si"> Lo sabía, soy íncreíble. Gracias por jugar conmigo :) </li>
+      <li>
+        Lo siento, no he sabido encontrar la fruta :(
+        Gracias por jugar de todos modos conmigo, ha sido divertido.
+      </li>
+    </condition>
+  </template>
+</category>
+</topic>
+
+</aiml>

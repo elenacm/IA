@@ -1,0 +1,5 @@
+pequenio
+mediano
+grande
+pequenia
+mediana

@@ -1,0 +1,16 @@
+fresa:pequenio pequenia
+manzana:mediano mediana
+naranja:mediano mediana
+kiwi:pequenio pequenia
+mandarina:pequenio
+pinia:grande
+mango:grande
+melocoton:mediano mediana
+higo:pequenio pequenia
+ciruela:pequenio pequenia
+pera:mediano mediana
+platano:mediano mediana
+coco:grande
+aguacate:mediano mediana
+nuez:pequenio pequenia
+cereza:pequenio pequenia
