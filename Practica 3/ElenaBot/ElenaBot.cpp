@@ -34,148 +34,156 @@ string ElenaBot::getName() {
 }
 
 //FALTA DESCRIPCION
-Player jugador;
-void setPlayer(Player p){ jugador = p; }
-Player getPlayer(){ return jugador; }
+Player p;
+void setPlayer(Player player){ p = player; }
+Player getPlayer(){ return p; }
 
-struct Anodo{	//Lo que nos debe devolver el algoritmo
-	int valor;
-	Move move;
-};
+//heuristicas miradas
+//http://nineil-leissi-cs.blogspot.com/2008/06/proyecto-1-unidad-juego-mancala.html
 
-class nodo{
-	private:
-		GameState juego;	//informacion de cada jugador y piezas
-		Move movimiento; //movimiento desde el padre
-		bool PlayerMax;
-	public:
-		nodo(GameState game, Move m, bool max){ //Constructor
-			juego = game;
-			movimiento = m;
-			PlayerMax = max;
-		}
-
-		//Devuelve el atributo privado juego
-		GameState getGS(){ return juego; }
-		//Devuelve el atributo privado movimiento
-		Move getM(){ return movimiento; }
-		//Devuelve el atributo privado PlayerMax
-		bool getPM(){ return PlayerMax; }
-
-		void setPM(bool pm){ PlayerMax = pm; }
-
-		friend ostream& operator<< (ostream& os, nodo gn){
-	    os << "\tJ1: Granero=" << (int) gn.juego.getSeedsAt(J1, GRANERO) <<
-	       " C1=" << (int) gn.juego.getSeedsAt(J1, P1) <<
-	       " C2=" << (int) gn.juego.getSeedsAt(J1, P2) <<
-	       " C3=" << (int) gn.juego.getSeedsAt(J1, P3) <<
-	       " C4=" << (int) gn.juego.getSeedsAt(J1, P4) <<
-	       " C5=" << (int) gn.juego.getSeedsAt(J1, P5) <<
-	       " C6=" << (int) gn.juego.getSeedsAt(J1, P6) << endl;
-
-	    os << "\tJ2: Granero=" << (int) gn.juego.getSeedsAt(J2, GRANERO) <<
-	       " C1=" << (int) gn.juego.getSeedsAt(J2, P1) <<
-	       " C2=" << (int) gn.juego.getSeedsAt(J2, P2) <<
-	       " C3=" << (int) gn.juego.getSeedsAt(J2, P3) <<
-	       " C4=" << (int) gn.juego.getSeedsAt(J2, P4) <<
-	       " C5=" << (int) gn.juego.getSeedsAt(J2, P5) <<
-	       " C6=" << (int) gn.juego.getSeedsAt(J2, P6) << endl;
-	    return os;
-		}
-
-		//Creamos los hijos del nodo actual
-		list<nodo> Crear_Hijos(){
-			list<nodo> hijos;
-			hijos.clear();
-
-			for(int i = 1; i <= 6; i++){
-				//simulo cada uno de los posibles movimientos
-				GameState hijo = juego.simulateMove((Move) i);
-				//cada movimiento lo meto en una lista
-
-				bool mismojugador = hijo.getCurrentPlayer() == getPlayer();
-				bool hijoamaximizar;
-
-				if(mismojugador)
-					hijoamaximizar = PlayerMax;
-				else
-					hijoamaximizar = !PlayerMax;
-
-				nodo actual(hijo, (Move) i, hijoamaximizar);
-
-				hijos.push_back(actual);
-			}
-
-			return hijos;
-		}
-};
 
 //Heuristica del nodo hoja
-int heuristica(GameState game){
-	//restar el granero del jugador 1 menos el del jugador 2
-	return game.getScore(J1)-game.getScore(J2);
+int ElenaBot::heuristica(const GameState& game){
+	int nadie = 0;
+
+	if(getPlayer() == J1)
+		return game.getScore(J1)-game.getScore(J2);
+	else if(getPlayer() == J2)
+		return game.getScore(J2)-game.getScore(J1);
+	else
+		return nadie;
+
 }
 
-Anodo minimax_function(nodo n, int profundidad){
-	cerr << "camino elegido" << endl;
-	cerr << n << endl;
-	Anodo minodo, v;
-	int mejorValor;
-	//Creo los movimientos posibles que se pueden hacer
-	list<nodo> hijos = n.Crear_Hijos();
+nodo::nodo(GameState game, Move m, bool max){ //Constructor
+	juego = game;
+	movimiento = m;
+	PlayerMax = max;
+}
 
+//Creamos los hijos del nodo actual
+//Pasar por referencia
+void nodo::Crear_Hijos(list<nodo>& hijos){
+
+	for(int i = 1; i <= 6; i++){
+		//simulo cada uno de los posibles movimientos
+		GameState hijo = juego.simulateMove((Move) i);
+		//cada movimiento lo meto en una lista
+
+		bool child_maximize = juego.getCurrentPlayer() == hijo.getCurrentPlayer()
+		 ? PlayerMax : !PlayerMax;
+
+		/*bool mismojugador = hijo.getCurrentPlayer() == getPlayer();
+		bool hijoamaximizar;
+
+		if(mismojugador)
+			hijoamaximizar = PlayerMax;
+		else
+			hijoamaximizar = !PlayerMax;*/
+
+		nodo actual(hijo, (Move) i, child_maximize);
+
+		hijos.push_back(actual);
+	}
+}
+
+Valor_Move ElenaBot::minimax_poda_function(nodo& n, int profundidad, int alpha, int beta){
+	//cerr << "camino elegido" << endl;
+	//cerr << "Explorando nodo: " << endl <<  n << endl;
+	Valor_Move minodo, v;
+
+	//si la profundidad es 0 o hemos llegado a un nodo hoja
 	if(profundidad == 0 || n.getGS().isFinalState()){
 		minodo.valor = heuristica(n.getGS());
 		minodo.move = n.getM();
-		cerr << "movimiento" << minodo.move << endl;
+		//cerr << "Heuristica ->" << minodo.valor << endl;
 		return minodo;
 	}
 
+	list<nodo> hijos;
+	n.Crear_Hijos(hijos);
+
 	if(n.getPM()){	//Jugador max
-		cerr << "jugador max" << endl;
-		mejorValor = INT_MIN;	//inicializo a menos infinito
+		//cerr << "Es un nodo a maximizar" << endl << endl;
+		//mejorValor = INT_MIN;	//inicializo a menos infinito
+		minodo.valor = INT_MIN;
+
 		//Recorremos los hijos del nodo
 		for(auto hijo : hijos){
+			v = minimax_poda_function(hijo, profundidad-1, alpha, beta);
+			if (v.valor > minodo.valor){
+				minodo.valor = v.valor;
+				minodo.move = hijo.getM();
+			}
+
+			if(alpha < minodo.valor)
+				alpha = minodo.valor;
+
+			if(beta <= alpha)
+				break;
+
+			/*
+			CODIGO PARA EL ALGORITMO MINIMAX ANTES IMPLEMENTADO
 			v = minimax_function(hijo, profundidad-1);
 			if (v.valor > mejorValor){
 				mejorValor = v.valor;
 				minodo.valor = mejorValor;
 				minodo.move = hijo.getM();
-			}
+			}*/
 		}
-		return minodo;
 	}
 	else{	//Jugador min
-		cerr << "Jugador min" << endl;
-		mejorValor = INT_MAX;	//inicializo a mas infinito
+		//cerr << "Es un nodo a minimizar" << endl << endl;
+		//mejorValor = INT_MAX;	//inicializo a mas infinito
+		minodo.valor = INT_MAX;
+
 		//Recorremos los hijos del nodo
 		for(auto hijo : hijos){
+			v = minimax_poda_function(hijo, profundidad-1, alpha, beta);
+			if (v.valor < minodo.valor){
+				minodo.valor = v.valor;
+				minodo.move = hijo.getM();
+			}
+
+			if(beta > minodo.valor)
+				beta = minodo.valor;
+
+			if(beta <= alpha)
+				break;
+
+			/*
+			CODIGO PARA EL ALGORITMO MINIMAX ANTES IMPLEMENTADO
 			v = minimax_function(hijo, profundidad-1);
 			if (v.valor < mejorValor){
 				mejorValor = v.valor;
 				minodo.valor = mejorValor;
 				minodo.move = hijo.getM();
-			}
+			}*/
 		}
-		return minodo;
 	}
+
+	return minodo;
 }
 
 Move ElenaBot::nextMove(const vector<Move> &adversary, const GameState &state) {
 
-	int profundidad = 2;
+	int profundidad = 15;
 	Player turno = state.getCurrentPlayer();
 	bool soyj1 = turno == J1;
-	nodo origen(state, M_NONE, soyj1);
+	nodo origen(state, M_NONE, true);
 	long timeout = this->getTimeOut();
-	Anodo minodo;
+	Valor_Move minodo;
 
 	setPlayer(turno);
   //FUNCION MINIMAX
 	//esta funcion devuelve el valor correspondiente a cada nodo
-	minodo = minimax_function(origen, profundidad);
+	//minodo = minimax_function(origen, profundidad);
 
-	cerr << "Fin MINIMAX" << endl;
+	//FUNCION MINIMAX CON PODA
+	//esta funcion devuelve el valor correspondiente a cada nodo
+	minodo = minimax_poda_function(origen, profundidad, INT_MIN, INT_MAX);
+	//cerr << "Valor poda " << minodo.valor << endl;
+	//cerr << "Fin MINIMAX" << endl;
 
 	Move movimiento = minodo.move;
 
