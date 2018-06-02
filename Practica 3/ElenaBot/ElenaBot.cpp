@@ -13,7 +13,9 @@
 #include <stack>
 #include <cmath>
 #include <limits.h>
+#include <chrono>
 using namespace std;
+using namespace chrono;
 
 ElenaBot::ElenaBot() {
 	// Inicializar las variables necesarias para ejecutar la partida
@@ -33,24 +35,20 @@ string ElenaBot::getName() {
 	return "ElenaBot"; // Sustituir por el nombre del bot
 }
 
-//FALTA DESCRIPCION
+//Función global para conocer el jugador que somos
 Player p;
 void setPlayer(Player player){ p = player; }
 Player getPlayer(){ return p; }
-
-//heuristicas miradas
-//http://nineil-leissi-cs.blogspot.com/2008/06/proyecto-1-unidad-juego-mancala.html
-
 
 //Heuristica del nodo hoja
 int ElenaBot::heuristica(const GameState& game){
 	int nadie = 0;
 
-	if(getPlayer() == J1)
+	if(getPlayer() == J1)	//Si soy el jugador 1
 		return game.getScore(J1)-game.getScore(J2);
-	else if(getPlayer() == J2)
+	else if(getPlayer() == J2)	//Si soy el jugador 2
 		return game.getScore(J2)-game.getScore(J1);
-	else
+	else	//Si no soy nadie
 		return nadie;
 
 }
@@ -62,27 +60,22 @@ nodo::nodo(GameState game, Move m, bool max){ //Constructor
 }
 
 //Creamos los hijos del nodo actual
-//Pasar por referencia
 void nodo::Crear_Hijos(list<nodo>& hijos){
 
 	for(int i = 1; i <= 6; i++){
 		//simulo cada uno de los posibles movimientos
 		GameState hijo = juego.simulateMove((Move) i);
-		//cada movimiento lo meto en una lista
 
+		//Compruebo si es mi turno o no, para saber cuando maximizar
 		bool child_maximize = juego.getCurrentPlayer() == hijo.getCurrentPlayer()
 		 ? PlayerMax : !PlayerMax;
 
-		/*bool mismojugador = hijo.getCurrentPlayer() == getPlayer();
-		bool hijoamaximizar;
-
-		if(mismojugador)
-			hijoamaximizar = PlayerMax;
-		else
-			hijoamaximizar = !PlayerMax;*/
-
+		//Creo un nodo con el GameState simulado,
+		//El movimiento que se ha realizado y
+		//si es jugador max
 		nodo actual(hijo, (Move) i, child_maximize);
 
+		//cada movimiento lo meto en una lista
 		hijos.push_back(actual);
 	}
 }
@@ -90,35 +83,40 @@ void nodo::Crear_Hijos(list<nodo>& hijos){
 Valor_Move ElenaBot::minimax_poda_function(nodo& n, int profundidad, int alpha, int beta){
 	//cerr << "camino elegido" << endl;
 	//cerr << "Explorando nodo: " << endl <<  n << endl;
+	//int mejorValor;
 	Valor_Move minodo, v;
 
 	//si la profundidad es 0 o hemos llegado a un nodo hoja
 	if(profundidad == 0 || n.getGS().isFinalState()){
 		minodo.valor = heuristica(n.getGS());
-		minodo.move = n.getM();
+		minodo.move = n.getM();	//Movimiento usado
 		//cerr << "Heuristica ->" << minodo.valor << endl;
 		return minodo;
 	}
 
 	list<nodo> hijos;
-	n.Crear_Hijos(hijos);
+	n.Crear_Hijos(hijos);	//Generamos los hijos
 
 	if(n.getPM()){	//Jugador max
 		//cerr << "Es un nodo a maximizar" << endl << endl;
-		//mejorValor = INT_MIN;	//inicializo a menos infinito
-		minodo.valor = INT_MIN;
+		//mejorValor = INT_MIN;
+		minodo.valor = INT_MIN;	//inicializo a menos infinito
 
 		//Recorremos los hijos del nodo
 		for(auto hijo : hijos){
+			//Llamamos recursivamente al método con profundidad-1
 			v = minimax_poda_function(hijo, profundidad-1, alpha, beta);
+			//Si el valor devuelto es mayor que el que se iba a devolver
 			if (v.valor > minodo.valor){
 				minodo.valor = v.valor;
 				minodo.move = hijo.getM();
 			}
 
+			//Si alpha es más pequeño que el valor a devolver
 			if(alpha < minodo.valor)
 				alpha = minodo.valor;
 
+			//Condición de poda: Si beta es menor o igual a alpha
 			if(beta <= alpha)
 				break;
 
@@ -134,20 +132,24 @@ Valor_Move ElenaBot::minimax_poda_function(nodo& n, int profundidad, int alpha, 
 	}
 	else{	//Jugador min
 		//cerr << "Es un nodo a minimizar" << endl << endl;
-		//mejorValor = INT_MAX;	//inicializo a mas infinito
-		minodo.valor = INT_MAX;
+		//mejorValor = INT_MAX;
+		minodo.valor = INT_MAX;	//inicializo a mas infinito
 
 		//Recorremos los hijos del nodo
 		for(auto hijo : hijos){
+			//Llamamos recursivamente al método con profundidad-1
 			v = minimax_poda_function(hijo, profundidad-1, alpha, beta);
+			//Si el valor devuelto es menor que el que se iba a devolver
 			if (v.valor < minodo.valor){
 				minodo.valor = v.valor;
 				minodo.move = hijo.getM();
 			}
 
+			//Si beta es mayor que el valor a devolver
 			if(beta > minodo.valor)
 				beta = minodo.valor;
 
+			//Condición de poda: Si beta es menor o igual a alpha
 			if(beta <= alpha)
 				break;
 
@@ -167,7 +169,7 @@ Valor_Move ElenaBot::minimax_poda_function(nodo& n, int profundidad, int alpha, 
 
 Move ElenaBot::nextMove(const vector<Move> &adversary, const GameState &state) {
 
-	int profundidad = 15;
+	int profundidad = 12;
 	Player turno = state.getCurrentPlayer();
 	bool soyj1 = turno == J1;
 	nodo origen(state, M_NONE, true);
