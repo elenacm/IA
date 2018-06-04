@@ -31,9 +31,10 @@ class nodo{
 		Move getM(){ return movimiento; }
 		//Devuelve el atributo privado PlayerMax
 		bool getPM(){ return PlayerMax; }
-
+		//Modifica el atributo PlayerMax
 		void setPM(bool pm){ PlayerMax = pm; }
 
+		//sobrecarga operador <<
 		friend ostream& operator<< (ostream& os, nodo gn){
 	    os << "\tJ1: Granero=" << (int) gn.juego.getSeedsAt(J1, GRANERO) <<
 	       " C1=" << (int) gn.juego.getSeedsAt(J1, P1) <<
@@ -55,9 +56,7 @@ class nodo{
 
 		//Creamos los hijos del nodo actual
 		void Crear_Hijos(list<nodo>& hijos);
-
 };
-
 
 class ElenaBot:Bot {
 public:
@@ -66,6 +65,7 @@ public:
 
 	//Heuristica del nodo hoja
 	int heuristica(const GameState& game);
+	//Algoritmo poda alfa-beta
 	Valor_Move minimax_poda_function(nodo& n, int profundidad, int alpha, int beta);
 
 	void initialize();

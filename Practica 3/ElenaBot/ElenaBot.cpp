@@ -20,7 +20,6 @@ using namespace chrono;
 ElenaBot::ElenaBot() {
 	// Inicializar las variables necesarias para ejecutar la partida
 	srand(time(0));
-
 }
 
 ElenaBot::~ElenaBot() {
@@ -50,7 +49,6 @@ int ElenaBot::heuristica(const GameState& game){
 		return game.getScore(J2)-game.getScore(J1);
 	else	//Si no soy nadie
 		return nadie;
-
 }
 
 nodo::nodo(GameState game, Move m, bool max){ //Constructor
@@ -65,7 +63,6 @@ void nodo::Crear_Hijos(list<nodo>& hijos){
 	for(int i = 1; i <= 6; i++){
 		//simulo cada uno de los posibles movimientos
 		GameState hijo = juego.simulateMove((Move) i);
-
 		//Compruebo si es mi turno o no, para saber cuando maximizar
 		bool child_maximize = juego.getCurrentPlayer() == hijo.getCurrentPlayer()
 		 ? PlayerMax : !PlayerMax;
@@ -80,11 +77,19 @@ void nodo::Crear_Hijos(list<nodo>& hijos){
 	}
 }
 
+high_resolution_clock::time_point tantes;
 Valor_Move ElenaBot::minimax_poda_function(nodo& n, int profundidad, int alpha, int beta){
 	//cerr << "camino elegido" << endl;
 	//cerr << "Explorando nodo: " << endl <<  n << endl;
 	//int mejorValor;
+	high_resolution_clock::time_point tdespues = high_resolution_clock::now();
 	Valor_Move minodo, v;
+
+	duration<double> transcurrido = duration_cast<duration<double>>(tdespues - tantes);
+
+	if(transcurrido.count() > 1.90){	//Comprobamos que el tiempo es menos de 2 seg
+		return {1000, n.getM()};
+	}
 
 	//si la profundidad es 0 o hemos llegado a un nodo hoja
 	if(profundidad == 0 || n.getGS().isFinalState()){
@@ -106,6 +111,10 @@ Valor_Move ElenaBot::minimax_poda_function(nodo& n, int profundidad, int alpha, 
 		for(auto hijo : hijos){
 			//Llamamos recursivamente al método con profundidad-1
 			v = minimax_poda_function(hijo, profundidad-1, alpha, beta);
+
+			//Parte del iterative deepening
+			if(v.valor == 1000){ return {1000, n.getM()}; }
+
 			//Si el valor devuelto es mayor que el que se iba a devolver
 			if (v.valor > minodo.valor){
 				minodo.valor = v.valor;
@@ -139,6 +148,10 @@ Valor_Move ElenaBot::minimax_poda_function(nodo& n, int profundidad, int alpha, 
 		for(auto hijo : hijos){
 			//Llamamos recursivamente al método con profundidad-1
 			v = minimax_poda_function(hijo, profundidad-1, alpha, beta);
+
+			//Parte del iterative deepening
+			if(v.valor == 1000){ return {1000, n.getM()}; }
+
 			//Si el valor devuelto es menor que el que se iba a devolver
 			if (v.valor < minodo.valor){
 				minodo.valor = v.valor;
@@ -169,12 +182,14 @@ Valor_Move ElenaBot::minimax_poda_function(nodo& n, int profundidad, int alpha, 
 
 Move ElenaBot::nextMove(const vector<Move> &adversary, const GameState &state) {
 
-	int profundidad = 12;
+	tantes = high_resolution_clock::now();
+	int profundidad = 20;
 	Player turno = state.getCurrentPlayer();
 	bool soyj1 = turno == J1;
 	nodo origen(state, M_NONE, true);
 	long timeout = this->getTimeOut();
-	Valor_Move minodo;
+	Valor_Move minodo, aux;
+	aux = {0, (Move) 0};
 
 	setPlayer(turno);
   //FUNCION MINIMAX
@@ -183,9 +198,18 @@ Move ElenaBot::nextMove(const vector<Move> &adversary, const GameState &state) {
 
 	//FUNCION MINIMAX CON PODA
 	//esta funcion devuelve el valor correspondiente a cada nodo
-	minodo = minimax_poda_function(origen, profundidad, INT_MIN, INT_MAX);
+	//minodo = minimax_poda_function(origen, profundidad, INT_MIN, INT_MAX);
 	//cerr << "Valor poda " << minodo.valor << endl;
 	//cerr << "Fin MINIMAX" << endl;
+
+	//Iterative deepening
+	for(int depth = 1; depth <= profundidad && aux.valor != 1000; depth++){
+		minodo = aux;
+		//cerr << "Profundidad -> " << depth << endl;
+		//cerr << "Valor -> " << aux.valor << endl;
+		//cerr << "Accion -> " << aux.move << endl;
+		aux = minimax_poda_function(origen, depth, INT_MIN, INT_MAX);
+	}
 
 	Move movimiento = minodo.move;
 
